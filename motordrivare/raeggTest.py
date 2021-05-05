@@ -12,7 +12,7 @@ rotor = RotaryEncoder(22, 23, wrap=True, max_steps=1000)
 rotor.steps = 0
 
 # Skapa motor
-motor = Motor(17, 18)
+motor = Motor(17, 27)
 
 # Avbrytknapp
 btn = Button(24, pull_up=True)
