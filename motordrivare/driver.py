@@ -8,26 +8,26 @@
 # 7. In4 - MT2
 # 8. GND
 
-# Kabel med text - +12V
+# Kabel med text - + - +12V
 
 from gpiozero import Motor
-from time import sleep
 
 motor = Motor(17, 27)
 
-pwr = 0 # Motor power -1 to 1
+pwr = 1 # Motor power -1 to 1
 # Elimination of the deadzone
 # To evaluate the minimum value, set minVal to 0
+
 minVal = 0.0 # The smallest value that gives non zero rotation velocity
-zero = 0.2
+zero = 0.0
 val = minVal + abs(pwr)*(1-minVal) # Power sent to the motor
+
 if val > 1:
     val = 1
+    
 if pwr > zero:
     motor.forward(val)
-    #sleep(2)
-elif pwr < zero:
+elif pwr < -1*zero:
     motor.backward(val)
-    #sleep(2)
 else:
     motor.stop()
