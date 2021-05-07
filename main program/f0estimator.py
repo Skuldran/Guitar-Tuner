@@ -28,7 +28,7 @@ class f0Estimator:
 		print('INIT: Estimator')
 			# Parameters ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		fmin = 40
-		dev_index = 2 # device index found by p.get_device_info_by_index(ii)
+		dev_index = 1 # device index found by p.get_device_info_by_index(ii)
 		maxNoHarmonics = 8
 		self.shitLen = 100
 
@@ -71,9 +71,19 @@ class f0Estimator:
 		self.smoothVarArray = shift(self.smoothVarArray, 1, fill_value=vol)
 		vol = np.median(self.smoothVarArray)
 		
-		if vol > 5e-7:
+		f0auld = self.smoothPitchArray[0];
+		
+		div = f0Estimate/f0auld;
+		
+		#print(f0Estimate)
+		#print('div: ', div)
+		
+		margin = 1.6
+		
+		if vol > 5e-7 and ((div > 1/margin and div < margin) or f0auld==0):
 			self.smoothPitchArray = shift(self.smoothPitchArray, 1, fill_value=f0Estimate)
 			f0Estimate = np.median(self.smoothPitchArray)
+			#print(self.smoothPitchArray)
 		else:
 			f0Estimate = -1
 		
