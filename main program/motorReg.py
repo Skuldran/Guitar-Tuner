@@ -63,7 +63,7 @@ class motorReg:
         if abs(percentError) < 20:
                 print(R+'The milk is delivered: ', self.frq, W);
                 self.motor.stop();
-                return;
+                return 1;
 
         if self.power > self.zero:
             forwardMin = forward_min_val(self.frq);

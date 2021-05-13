@@ -25,6 +25,7 @@ def listen(freq_data, vol_data):
 		estimator.listenEstimate(freq_data, vol_data)
 
 def regulate(freq_data, vol_data):
+	greatlistener = 0
 	while True:
 		frq = freq_data.get()
 		vol = vol_data.get()
@@ -38,7 +39,12 @@ def regulate(freq_data, vol_data):
 		
 		os.system('clear')
 		
-		regulator.updatePower()
+		regulatorval = regulator.updatePower()
+		
+		if regulatorval == 1:
+			greatlistener += 1
+			if greatlistener > 50:
+				break
 		
 		print('Target frequency', regulator.endfrq)
 		print('Frequency', frq)
@@ -70,8 +76,6 @@ atexit.register(exit_handler)
 
 # quit();
 
-
-
 pitchList = [];
 volList = [];
 timeList = [];
@@ -80,6 +84,8 @@ listener = multiprocessing.Process(target = listen, args=(freq_data, vol_data, )
 listener.start()
 
 starttime = time.time()
+
+greatlistener = 0
 
 #oscilator = multiprocessing.Process(target = ui_input, args=(regulator, ))
 #oscilator.start()
