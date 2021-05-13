@@ -17,6 +17,8 @@ class motorReg:
         self.zero = zero
         self.pinA = pinA
         self.pinB = pinB
+        
+        self.oldpower = 0.0
 
         self.kP = kP
         self.kI = kI
@@ -30,7 +32,7 @@ class motorReg:
         self.vol = 0
 
     def updatePower(self):
-        if self.frq == -1 or self.frq == 0:
+        if self.frq <= 0:
                 print(P+'Percent error: NaN'+W)
                 print(P+'He need some milk!'+W)
                 self.power = 0;
@@ -38,6 +40,18 @@ class motorReg:
                 return;
         
         self.power = self.pid(self.frq)
+        
+        
+        # abs(-1 - (1)) = 2 --> -1 + 0.25
+        # abs(-1 - (-0.5)) = 0.5 --> -1 + 0.25
+        steplimit = 0.05
+        powerdiff = self.oldpower - self.power
+        
+        if abs(powerdiff) >= steplimit:
+          self.power = self.oldpower + math.copysign(steplimit, -powerdiff) 
+        
+        self.oldpower = self.power
+        
         #val = self.minval + abs(self.power)*(1-self.minval)
 
         #if val > 1:
@@ -58,16 +72,22 @@ class motorReg:
             
             if val>1:
                 val = 1
+            elif val < 0:
+                val = 0
             
             self.motor.forward(val)
+            
             print(R+'Forward: ', val, W)
         elif self.power < -1*self.zero:
             val = self.minval + abs(self.power)*(1-self.minval)
             
             if val>1:
                 val = 1
+            elif val < 0:
+                val = 0
             
             self.motor.backward(val)
+            
             print(R+'Backward: ', val, W)
         else:
             self.motor.stop()

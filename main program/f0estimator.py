@@ -20,15 +20,22 @@ def moving_average(x, w):
 	y = np.convolve(x, np.ones(w)/w, 'valid')
 	y = np.append(y, x[-w:-1])
 	return y
+	
+def getmicindex(audio):
+	for i in range(audio.get_device_count()):
+		if 'i2s' in audio.get_device_info_by_index(i).get('name'):
+			return i
 
 class f0Estimator:	
 	def __init__(self):
 		#stream, chunklength, shitLen, samplingFreq, 
+
+		audio = pyaudio.PyAudio() # create pyaudio instantiation
 		
 		print('INIT: Estimator')
 			# Parameters ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		fmin = 40
-		dev_index = 1 # device index found by p.get_device_info_by_index(ii)
+		dev_index = getmicindex(audio)
 		maxNoHarmonics = 8
 		self.shitLen = 100
 
@@ -41,8 +48,6 @@ class f0Estimator:
 		chans = 1 # 1 channel
 		self.samplingFreq = 44100 # 44.1kHz sampling rate
 		self.chunkLength = 2**ceil(log2(2*self.samplingFreq/fmin)) # 2^12 samples for buffer 4096
-		
-		audio = pyaudio.PyAudio() # create pyaudio instantiation
 		
 		# create pyaudio stream
 		self.stream = audio.open(format = form_1,rate = self.samplingFreq,channels = chans, \
@@ -80,7 +85,7 @@ class f0Estimator:
 		
 		margin = 1.6
 		
-		if vol > 5e-7 and ((div > 1/margin and div < margin) or f0auld==0):
+		if vol > 1e-6 and ((div > 1/margin and div < margin) or f0auld==0):
 			self.smoothPitchArray = shift(self.smoothPitchArray, 1, fill_value=f0Estimate)
 			f0Estimate = np.median(self.smoothPitchArray)
 			#print(self.smoothPitchArray)

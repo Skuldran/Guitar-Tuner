@@ -35,22 +35,22 @@ def regulate(freq_data, vol_data):
 		pitchList.append(frq);
 		volList.append(vol);
 		timeList.append(time.time());
-
-			
 		
 		os.system('clear')
+		
 		regulator.updatePower()
+		
 		print('Target frequency', regulator.endfrq)
 		print('Frequency', frq)
 		print('Vol', vol)
 		print('Motor power', regulator.power)
 	#print(freq_data.get())
-		ui_input(regulator)
+		#ui_input(regulator)
 	
-def ui_input(regulator):
-	#while True:
-		#dt = (starttime-time.time());
-		regulator.endfrq = 20*math.sin(time.perf_counter())+100;
+#def ui_input(regulator):
+#	while True:
+#		dt = (starttime-time.time());
+#		regulator.endfrq = 20*math.sin(time.perf_counter())+100;
 		
 #Data queue containing estimated frequency and volume
 freq_data = multiprocessing.Queue(100)
