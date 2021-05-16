@@ -11,20 +11,23 @@ import math
 def exit_handler():
 	regulator.stop()
 	
-	plt.figure()
-	plt.scatter(timeList, pitchList);
-	plt.title('Pitch over time');
-	#plt.show()
-	plt.figure();
-	plt.semilogy(timeList, volList);
-	plt.title('Volume over time');
-	plt.show();
+	if False:
+		plt.figure()
+		plt.scatter(timeList, pitchList);
+		plt.title('Pitch over time');
+		#plt.show()
+		plt.figure();
+		plt.semilogy(timeList, volList);
+		plt.title('Volume over time');
+		plt.show();
 
 def listen(freq_data, vol_data):
 	while True:
 		estimator.listenEstimate(freq_data, vol_data)
 
 def regulate(freq_data, vol_data):
+	
+	
 	greatlistener = 0
 	while True:
 		frq = freq_data.get()
@@ -43,7 +46,7 @@ def regulate(freq_data, vol_data):
 		
 		if regulatorval == 1:
 			greatlistener += 1
-			if greatlistener > 50:
+			if greatlistener > 25:
 				break
 		
 		print('Target frequency', regulator.endfrq)
@@ -64,17 +67,15 @@ vol_data = multiprocessing.Queue(100)
 
 estimator = f0estimator.f0Estimator() #Skapa estimator
 
-regulator = motorReg.motorReg(minval = 0.0, kP = 0.08, kI = 0.0007, kD = 0.04, endfrq = 120, zero = 0) #Skapa regulator
+regulator = motorReg.motorReg(minval = 0.4, kP = 0.08, kI = 0.0007, kD = 0.04, endfrq = 120, zero = 0) #Skapa regulator
 
 atexit.register(exit_handler)
 
-# for i in range(50):
-	
-	# print(i/50)
-	# regulator.override(i/50);
-	# time.sleep(1)
-
-# quit();
+#for i in range(50):
+#	
+#	print(-i/50)
+#	regulator.override(-i/50)
+#	time.sleep(1)
 
 pitchList = [];
 volList = [];
@@ -85,12 +86,17 @@ listener.start()
 
 starttime = time.time()
 
-greatlistener = 0
 
 #oscilator = multiprocessing.Process(target = ui_input, args=(regulator, ))
 #oscilator.start()
 
-regulate(freq_data, vol_data)#@^;
+
+while True:
+	time.sleep(2)
+	os.system('clear')
+	regulator.endfrq = int(input('Enter your desired frequency: '))
+	regulate(freq_data, vol_data)#@^;
+
 
 #speaker = multiprocessing.Process(target = regulatre, args=(freq_data))
 #speaker.start()

@@ -37,18 +37,19 @@ class motorReg:
                 print(P+'He need some milk!'+W)
                 self.power = 0;
                 self.motor.stop()
-                return;
+                return
         
         self.power = self.pid(self.frq)
         
         
         # abs(-1 - (1)) = 2 --> -1 + 0.25
         # abs(-1 - (-0.5)) = 0.5 --> -1 + 0.25
-        steplimit = 0.05
+        steplimit = 0.1
+        
         powerdiff = self.oldpower - self.power
         
         if abs(powerdiff) >= steplimit:
-          self.power = self.oldpower + math.copysign(steplimit, -powerdiff) 
+          self.power = self.oldpower + math.copysign(steplimit, -powerdiff)
         
         self.oldpower = self.power
         
@@ -57,17 +58,17 @@ class motorReg:
         #if val > 1:
         #    val = 1
         
-        percentError = 1200*math.log2(self.frq/self.endfrq);
+        percentError = 1200*math.log2(self.frq/self.endfrq)
         print('Percent error: ', percentError, W)
         
         if abs(percentError) < 20:
-                print(R+'The milk is delivered: ', self.frq, W);
-                self.motor.stop();
-                return 1;
+                print(R+'The milk is delivered: ', self.frq, W)
+                self.motor.stop()
+                return 1
 
         if self.power > self.zero:
-            forwardMin = forward_min_val(self.frq);
-            val = forwardMin + abs(self.power)*(1-forwardMin)
+            forwardMin = forward_min_val(self.frq)
+            val = forwardMin + abs(self.power)#*(1-forwardMin)
             
             
             if val>1:
@@ -79,7 +80,7 @@ class motorReg:
             
             print(R+'Forward: ', val, W)
         elif self.power < -1*self.zero:
-            val = self.minval + abs(self.power)*(1-self.minval)
+            val = self.minval + abs(self.power)#*(1-self.minval)
             
             if val>1:
                 val = 1
@@ -99,7 +100,7 @@ class motorReg:
         if power > 0:
                 self.motor.forward(power)
         else:
-                self.motor.backward(power)
+                self.motor.backward(-power)
                 
 
 def forward_min_val(frq):

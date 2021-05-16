@@ -32,11 +32,11 @@ class f0Estimator:
 
 		audio = pyaudio.PyAudio() # create pyaudio instantiation
 		
-		print('INIT: Estimator')
+		#print('INIT: Estimator')
 			# Parameters ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		fmin = 40
 		dev_index = getmicindex(audio)
-		maxNoHarmonics = 8
+		maxNoHarmonics = 12
 		self.shitLen = 100
 
 		smooth = 5
@@ -76,16 +76,16 @@ class f0Estimator:
 		self.smoothVarArray = shift(self.smoothVarArray, 1, fill_value=vol)
 		vol = np.median(self.smoothVarArray)
 		
-		f0auld = self.smoothPitchArray[0];
+		f0auld = self.smoothPitchArray[0]
 		
-		div = f0Estimate/f0auld;
+		div = f0Estimate/f0auld
 		
 		#print(f0Estimate)
 		#print('div: ', div)
 		
-		margin = 1.6
+		margin = 1.75
 		
-		if vol > 1e-6 and ((div > 1/margin and div < margin) or f0auld==0):
+		if vol > 6e-6 and ((div > 1/margin and div < margin) or f0auld==0):
 			self.smoothPitchArray = shift(self.smoothPitchArray, 1, fill_value=f0Estimate)
 			f0Estimate = np.median(self.smoothPitchArray)
 			#print(self.smoothPitchArray)
