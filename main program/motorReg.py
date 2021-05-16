@@ -32,6 +32,8 @@ class motorReg:
         self.vol = 0
 
     def updatePower(self):
+        self.pid.setpoint = self.endfrq;
+      
         if self.frq <= 0:
                 print(P+'Percent error: NaN'+W)
                 print(P+'He need some milk!'+W)
@@ -39,8 +41,10 @@ class motorReg:
                 self.motor.stop()
                 return
         
-        self.power = self.pid(self.frq)
+        self.power = self.pid(self.frq, dt=1) #Constant dt
         
+        
+        #self.power = 0;
         
         # abs(-1 - (1)) = 2 --> -1 + 0.25
         # abs(-1 - (-0.5)) = 0.5 --> -1 + 0.25
@@ -48,8 +52,8 @@ class motorReg:
         
         powerdiff = self.oldpower - self.power
         
-        if abs(powerdiff) >= steplimit:
-          self.power = self.oldpower + math.copysign(steplimit, -powerdiff)
+        #if abs(powerdiff) >= steplimit:
+        #  self.power = self.oldpower + math.copysign(steplimit, -powerdiff)
         
         self.oldpower = self.power
         
@@ -61,15 +65,16 @@ class motorReg:
         percentError = 1200*math.log2(self.frq/self.endfrq)
         print('Percent error: ', percentError, W)
         
-        if abs(percentError) < 20:
+        if abs(percentError) < 25:
                 print(R+'The milk is delivered: ', self.frq, W)
                 self.motor.stop()
                 return 1
 
         if self.power > self.zero:
             forwardMin = forward_min_val(self.frq)
-            val = forwardMin + abs(self.power)#*(1-forwardMin)
+            val = self.minval + abs(self.power)#*(1-forwardMin)
             
+
             
             if val>1:
                 val = 1
@@ -79,13 +84,21 @@ class motorReg:
             self.motor.forward(val)
             
             print(R+'Forward: ', val, W)
+            
         elif self.power < -1*self.zero:
             val = self.minval + abs(self.power)#*(1-self.minval)
+            
+            #val = max(val/2, val-0.1);
+            if val>0.05:
+              val = val/2-0.025;
+            
             
             if val>1:
                 val = 1
             elif val < 0:
                 val = 0
+            
+            
             
             self.motor.backward(val)
             
